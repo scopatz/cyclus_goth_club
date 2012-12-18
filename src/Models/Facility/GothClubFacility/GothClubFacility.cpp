@@ -7,6 +7,7 @@
 #include "CycException.h"
 
 using namespace std;
+using namespace boost;
 
 /* --------------------
  * all MODEL classes have these members
@@ -23,8 +24,8 @@ GothClubFacility::~GothClubFacility() {};
 void GothClubFacility::initModuleMembers(QueryEngine* qe) {
   QueryEngine* input = qe->queryElement("input");
   //retrieve input data members here. For example :  
-  incommodity_ = lexical_cast<double>(input -> getElementContent("incommodity"));
-  outcommodity_ = lexical_cast<double>(input -> getElementContent("outcommodity"));
+  incommodity_ = lexical_cast<string>(input -> getElementContent("incommodity"));
+  outcommodity_ = lexical_cast<string>(input -> getElementContent("outcommodity"));
   capacity_ = lexical_cast<int>(input -> getElementContent("capacity"));
 }
 
@@ -52,7 +53,7 @@ std::string GothClubFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GothClubFacility::receiveMessage(msg_ptr msg) {
-  orders_waiting_.push_back(msg);
+  order_queue_.push_back(msg);
 };
 
 /* ------------------- */ 
@@ -64,9 +65,8 @@ void GothClubFacility::receiveMessage(msg_ptr msg) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<rsrc_ptr> GothClubFacility::removeResource(Transaction order) {
-Transaction trans = order->trans();
-  if (trans.commod != outcommodity_) {
+vector<rsrc_ptr> GothClubFacility::removeResource(Transaction trans) {
+  if (trans.commod() != outcommodity_) {
     string err_msg = "GothClubFacility can only send '" + outcommodity_  + ".";
     throw CycException(err_msg);
   }

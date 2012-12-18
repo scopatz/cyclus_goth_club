@@ -6,6 +6,8 @@
 #include "FacilityModel.h"
 #include "QueryEngine.h"
 #include "ResourceBuff.h"
+#include "boost/lexical_cast.hpp"
+
 
 class GothClubFacility : public FacilityModel  {
 /* --------------------
@@ -18,7 +20,7 @@ class GothClubFacility : public FacilityModel  {
   virtual void initModuleMembers(QueryEngine* qe);
   virtual std::string str();
   virtual void cloneModuleMembersFrom(FacilityModel* src);
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<rsrc_ptr> removeResource(Transaction trans);
   virtual void addResource(Transaction trans,
                               std::vector<rsrc_ptr> manifest);
 
@@ -28,12 +30,12 @@ class GothClubFacility : public FacilityModel  {
  public:
   virtual void handleTick(int time);
   virtual void handleTock(int time);
-  double incommodity_;
-  double outcommodity_;
+  std::string incommodity_;
+  std::string outcommodity_;
   int capacity_;
 
   ResourceBuff bodies_;
-  vector<msg_ptr> order_queue_;
+  std::vector<msg_ptr> order_queue_;
 
 };
 
