@@ -1,13 +1,14 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
 datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
-  <define name="StubFacility">
-    <element name="StubFacility"> 
+  <define name="GothClubFacility">
+    <element name="GothClubFacility"> 
       <element name="input">
+        <element name="capacity">
+          <data type="int">
+        </element>
         <ref name="incommodity"/>
-        <oneOrMore>
-          <ref name="outcommodity"/>
-        </oneOrMore>
+        <ref name="outcommodity"/>
       </element>
     </element>
   </define>

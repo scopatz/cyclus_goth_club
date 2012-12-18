@@ -1,7 +1,7 @@
-// StubFacility.cpp
-// Implements the StubFacility class
+// GothClubFacility.cpp
+// Implements the GothClubFacility class
 
-#include "StubFacility.h"
+#include "GothClubFacility.h"
 
 #include "Logger.h"
 #include "CycException.h"
@@ -14,29 +14,32 @@ using namespace std;
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubFacility::StubFacility() {};
+GothClubFacility::GothClubFacility() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubFacility::~StubFacility() {};
+GothClubFacility::~GothClubFacility() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void StubFacility::initModuleMembers(QueryEngine* qe) {
+void GothClubFacility::initModuleMembers(QueryEngine* qe) {
   QueryEngine* input = qe->queryElement("input");
   //retrieve input data members here. For example :  
-  //string query = "incommodity";
-  //incommodity_ = lexical_cast<double>(input->getElementContent(query));
+  incommodity_ = lexical_cast<double>(input -> getElementContent("incommodity"));
+  outcommodity_ = lexical_cast<double>(input -> getElementContent("outcommodity"));
+  capacity_ = lexical_cast<int>(input -> getElementContent("capacity"));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void StubFacility::cloneModuleMembersFrom(FacilityModel* src) {
-  StubFacility* src_stub = dynamic_cast<StubFacility*>(src);
+void GothClubFacility::cloneModuleMembersFrom(FacilityModel* src) {
+  GothClubFacility* src_fac = dynamic_cast<GothClubFacility*>(src);
   //copy data members here. For example : 
-  //incommodity_ = src_stub->inCommodity();
+  incommodity_ = src_fac->incommodity_;
+  outcommodity_ = src_fac->outcommodity_;
+  capacity_ = src_fac->capacity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-std::string StubFacility::str() {
-  return FacilityModel::str();
+std::string GothClubFacility::str() {
+  return "I am so metal!\n";
 };
 
 /* ------------------- */ 
@@ -48,7 +51,9 @@ std::string StubFacility::str() {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::receiveMessage(msg_ptr msg) {}
+void GothClubFacility::receiveMessage(msg_ptr msg) {
+  orders_waiting_.push_back(msg);
+};
 
 /* ------------------- */ 
 
@@ -59,16 +64,27 @@ void StubFacility::receiveMessage(msg_ptr msg) {}
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<rsrc_ptr> StubFacility::removeResource(Transaction order) {}
+vector<rsrc_ptr> GothClubFacility::removeResource(Transaction order) {
+Transaction trans = order->trans();
+  if (trans.commod != outcommodity_) {
+    string err_msg = "GothClubFacility can only send '" + outcommodity_  + ".";
+    throw CycException(err_msg);
+  }
+
+  Manifest bods = bodies_.popNum(1);
+  return bods;
+}
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest){}
+void GothClubFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest){
+bodies_.pushAll(manifest);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::handleTick(int time){}
+void GothClubFacility::handleTick(int time){}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::handleTock(int time){}
+void GothClubFacility::handleTock(int time){}
 
 /* ------------------- */ 
 
@@ -78,11 +94,11 @@ void StubFacility::handleTock(int time){}
  * --------------------
  */
 
-extern "C" Model* constructStubFacility() {
-  return new StubFacility();
+extern "C" Model* constructGothClubFacility() {
+  return new GothClubFacility();
 }
 
-extern "C" void destructStubFacility(Model* model) {
+extern "C" void destructGothClubFacility(Model* model) {
   delete model;
 }
 
